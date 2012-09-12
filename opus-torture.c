@@ -1,6 +1,3 @@
-// gcc -o opus_torture opus_torture.c -Wall -lopus -lm -lsndfile
-#define HAVE_OPUS_CUSTOM
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
