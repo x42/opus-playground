@@ -175,6 +175,7 @@ static void usage (int status) {
 	printf ("Options:\n\
   -c, --custom               use opus-custom mode\n\
   -e, --evil                 enable evil tests e.g. denormals\n\
+  -f, --float                write 32bit float WAV file\n\
   -h, --help                 display this help and exit\n\
   -k, --kbps <num>           kilobit per second for encoding\n\
   -p, --period <num>         block-size\n\
@@ -199,6 +200,7 @@ static struct option const long_options[] =
 	{"version", no_argument, 0, 'V'},
 	{"custom", no_argument, 0, 'c'},
 	{"evil", no_argument, 0, 'o'},
+	{"float", no_argument, 0, 'f'},
 	{"kbps", required_argument, 0, 'k'},
 	{"period", required_argument, 0, 'p'},
 	{"sample-rate", required_argument, 0, 's'},
@@ -223,12 +225,14 @@ int main (int argc, char ** argv)  {
 	int kbps = 128;
 	int custom = 0;
 	int evil = 0;
+	int sf_format = SF_FORMAT_PCM_16;
 	char *outfile;
 
 	int c;
 	while ((c = getopt_long (argc, argv,
 			   "c"  /* custom */
 			   "e"  /* evil */
+			   "f"  /* float */
 			   "h"  /* help */
 			   "k:" /* kbps */
 			   "p:" /* period */
@@ -239,6 +243,10 @@ int main (int argc, char ** argv)  {
 		switch (c) {
 			case 's':
 				sample_rate = atoi(optarg);
+				break;
+
+			case 'f':
+				sf_format = SF_FORMAT_FLOAT;
 				break;
 
 			case 'k':
@@ -313,7 +321,7 @@ int main (int argc, char ** argv)  {
 	memset(&sfnfo, 0, sizeof(SF_INFO));
 	sfnfo.samplerate = sample_rate;
 	sfnfo.channels = 2;
-	sfnfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+	sfnfo.format = SF_FORMAT_WAV | sf_format;
 	SNDFILE* sf = sf_open(outfile, SFM_WRITE, &sfnfo);
 	int mode = 0;
 	if (!sf) {
