@@ -168,45 +168,47 @@ void opus_custom_destroy(struct opuscodec *cd) {
 }
 #endif
 
-
 static void usage (int status) {
 	printf ("opus-torture - test Opus.\n\n");
 	printf ("Usage: opus-torture [ OPTIONS ] <filename>\n\n");
 	printf ("Options:\n\
-  -c, --custom               use opus-custom mode\n\
+  -c, --custom               use opus-custom mode (default: off)\n\
   -e, --evil                 enable evil tests e.g. denormals\n\
   -f, --float                write 32bit float WAV file\n\
   -h, --help                 display this help and exit\n\
-  -k, --kbps <num>           kilobit per second for encoding\n\
-  -p, --period <num>         block-size\n\
-  -s, --samplerate <num>     audio sample rate\n\
+  -k, --kbps <num>           kilobit per second for encoding (default 128)\n\
+  -p, --period <num>         block-size (default 120)\n\
+  -s, --samplerate <num>     audio sample rate (default 48000)\n\
   -V, --version              print version information and exit\n\
 \n");
 	printf ("\n\
-opus-torture writes a stereo-file wav file\n\
-channel 1 is some generated raw audio,\n\
-channel 2 will have the same signal passed though opus en/decode\n\
-cycle.\n\
+opus-torture writes a stereo-file wav file with various audio patterns\n\
+channel 1 is the generated raw audio,\n\
+channel 2 has the same signal passed though an opus en/decode cycle\n\
+\n\
+if opus custom is used '-c', the period-size '-p' needs to be a power of\n\
+two >=64 and <=1024. Vanilla Opus accepts period-sizes which are multiples\n\
+of 120 samples.\n\
+By default a 16bit signed integer wav-file is created. This can be overridden\n\
+with the '-f' option.\n\
 \n");
 	printf ("Report bugs to Robin Gareus <robin@gareus.org>\n"
 	        "Website and manual: <https://github.com/x42/opus-torture>\n");
 	exit (status);
 }
 
-
 static struct option const long_options[] =
 {
 	{"help", no_argument, 0, 'h'},
 	{"version", no_argument, 0, 'V'},
 	{"custom", no_argument, 0, 'c'},
-	{"evil", no_argument, 0, 'o'},
+	{"evil", no_argument, 0, 'e'},
 	{"float", no_argument, 0, 'f'},
 	{"kbps", required_argument, 0, 'k'},
 	{"period", required_argument, 0, 'p'},
 	{"sample-rate", required_argument, 0, 's'},
 	{NULL, 0, NULL, 0}
 };
-
 
 
 int main (int argc, char ** argv)  {
