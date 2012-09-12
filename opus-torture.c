@@ -21,14 +21,14 @@
 #define OPERR(FMT,...)  if (err != OPUS_OK) { fprintf(stderr, FMT ": %d\n", ##__VA_ARGS__, err); return 1; }
 #define OPWARN(FMT,...)  if (err != OPUS_OK) { fprintf(stderr, FMT ": %d\n", ##__VA_ARGS__, err); }
 
-void buffer_constant (float* b, int n, float v) {
+static void buffer_constant (float* const b, const int n, const float v) {
 	int i;
   for (i = 0; i < n; ++i) {
     b[i] = v;
   }
 }
 
-void buffer_impulse (float* b, int n, float v) {
+static void buffer_impulse (float* const b, const int n, const float v) {
 	int i;
   b[0] = v;
   for (i = 1; i < n; ++i) {
@@ -36,7 +36,7 @@ void buffer_impulse (float* b, int n, float v) {
   }
 }
 
-void buffer_rand_impulse (float* b, int n, float v) {
+static void buffer_rand_impulse (float* const b, const int n, const float v) {
 	int i;
   for (i = 0; i < n; ++i) {
     b[i] = 0;
@@ -46,21 +46,21 @@ void buffer_rand_impulse (float* b, int n, float v) {
 }
 
 
-void buffer_sine (float* b, int n, int p, int sr, int f, float v) {
+static void buffer_sine (float* const b, const int n, const int p, const int sr, const int f, const float v) {
 	int i;
   for (i = 0; i < n; ++i) {
     b[i] = v * sin (2 * M_PI * f * (i+p) / (double)sr);
   }
 }
 
-void buffer_rect (float* b, int n, float v) {
+static void buffer_rect (float* const b, const int n, const float v0, const float v1) {
 	int i;
   int const m = n / 2;
   for (i = 0; i < m; ++i) {
-    b[i] = v;
+    b[i] = v0;
   }
   for (i = m; i < n; ++i) {
-    b[i] = 0;
+    b[i] = v1;
   }
 }
 
@@ -79,7 +79,7 @@ struct opuscodec {
 	unsigned char *EncodedBytes;
 };
 
-int opus_vanilla_init(struct opuscodec *cd, int sample_rate, int kbps) {
+int opus_vanilla_init(struct opuscodec *cd, const int sample_rate, const int kbps) {
 
 	// setup Opus en/decoders
 	int err = OPUS_OK;
@@ -101,7 +101,7 @@ int opus_vanilla_init(struct opuscodec *cd, int sample_rate, int kbps) {
 	return 0;
 }
 
-void opus_vanilla_process(struct opuscodec *cd, float *in, float *out) {
+void opus_vanilla_process(struct opuscodec *cd, float * const in, float * const out) {
 	int encoded_byte_cnt = opus_encode_float(cd->encoder, in, cd->period_size, cd->EncodedBytes, cd->CompressedMaxSizeByte);
 	int decoded_byte_cnt = opus_decode_float(cd->decoder, cd->EncodedBytes, encoded_byte_cnt, out, cd->period_size, 0);
 	if (decoded_byte_cnt != cd->period_size) {
@@ -115,7 +115,7 @@ void opus_vanilla_destroy(struct opuscodec *cd) {
 }
 
 #ifdef HAVE_OPUS_CUSTOM
-int opus_custom_init(struct opuscodec *cd, int sample_rate, int kbps) {
+int opus_custom_init(struct opuscodec *cd, const int sample_rate, const int kbps) {
 	// setup Opus en/decoders
 	int err = OPUS_OK;
 	cd->opus_mode = opus_custom_mode_create(sample_rate, cd->period_size, &err );
@@ -141,7 +141,7 @@ int opus_custom_init(struct opuscodec *cd, int sample_rate, int kbps) {
 	return 0;
 }
 
-void opus_custom_process(struct opuscodec *cd, float *in, float *out) {
+void opus_custom_process(struct opuscodec *cd, float * const in, float * const out) {
 		int encoded_byte_cnt = opus_custom_encode_float(cd->encoder_custom, in, cd->period_size, cd->EncodedBytes, cd->CompressedMaxSizeByte);
 		int decoded_byte_cnt = opus_custom_decode_float(cd->decoder_custom, cd->EncodedBytes, encoded_byte_cnt, out,cd-> period_size);
 		if (decoded_byte_cnt != cd->period_size) {
@@ -334,10 +334,10 @@ int main (int argc, char ** argv)  {
 					buffer_impulse(float_in, period_size, .5);
 					break;
 				case 2:
-					buffer_rect(float_in, period_size, .5);
+					buffer_rect(float_in, period_size, .5, -.5);
 					break;
 				case 3:
-					buffer_rect(float_in, period_size, 1.0);
+					buffer_rect(float_in, period_size, 1.0, 0);
 					break;
 				case 4:
 					buffer_constant (float_in, period_size, 1e-27);
@@ -351,7 +351,7 @@ int main (int argc, char ** argv)  {
 
 					/* evil stuff :) */
 				case 7:
-					buffer_rect(float_in, period_size, 1.5);
+					buffer_rect(float_in, period_size, -1.5, 1.5);
 					break;
 				case 8:
 					buffer_constant (float_in, period_size, 1e-38);
