@@ -14,8 +14,10 @@ CFLAGS+= -DVERSION="\"$(VERSION)\""
 CFLAGS+=`pkg-config --cflags opus sndfile`
 LOADLIBES=`pkg-config --libs opus sndfile` -lm
 
-ifeq ($(shell test -f /usr/include/opus/opus_custom.h || echo no), no)
-	CFLAGS+=-DHAVE_OPUS_CUSTOM
+ifeq ($(shell test -f `pkg-config --variable=includedir opus`/opus/opus_custom.h && echo yes), yes)
+  CFLAGS+=-DHAVE_OPUS_CUSTOM
+else
+  $(warning "building w/o opus-custom support")
 endif
 
 all: opus-torture
