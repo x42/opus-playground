@@ -2,7 +2,7 @@ PREFIX ?= /usr/local
 bindir = $(PREFIX)/bin
 mandir = $(PREFIX)/man
 
-VERSION=0.1.0
+VERSION=0.2.0
 OPTIMIZATIONS ?= -msse -msse2 -mfpmath=sse -ffast-math -fomit-frame-pointer -O3 -fno-finite-math-only
 
 ifeq ($(shell pkg-config --exists opus sndfile || echo no), no)
