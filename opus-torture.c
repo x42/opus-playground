@@ -20,6 +20,7 @@
 #define ERREXIT(FMT,...) { fprintf(stderr, FMT, ##__VA_ARGS__); return EXIT_FAILURE; }
 #define OPERR(FMT,...)  if (err != OPUS_OK) { fprintf(stderr, FMT ": %d\n", ##__VA_ARGS__, err); return 1; }
 #define OPWARN(FMT,...)  if (err != OPUS_OK) { fprintf(stderr, FMT ": %d\n", ##__VA_ARGS__, err); }
+#define NOTIFY(FMT,...)  if (!(notify&1)) { printf(" - "FMT"\n", ##__VA_ARGS__); notify|=1; }
 
 static void buffer_constant (float* const b, const int n, const float v) {
 	int i;
@@ -327,36 +328,46 @@ int main (int argc, char ** argv)  {
 	int total = 0;
 	for (mode=0; mode < (evil?10:7); ++mode) {
 		int l;
+		int notify=0;
 		for (l=0; l < loop; l++) {
 
 			switch(mode) {
 				case 1:
+					NOTIFY("Impulse amp:0.5");
 					buffer_impulse(float_in, period_size, .5);
 					break;
 				case 2:
+					NOTIFY("Rect wave amp:-0.5..0.5");
 					buffer_rect(float_in, period_size, .5, -.5);
 					break;
 				case 3:
+					NOTIFY("Rect wave amp:0.0..1.0");
 					buffer_rect(float_in, period_size, 1.0, 0);
 					break;
 				case 4:
+					NOTIFY("Constant 1e-27");
 					buffer_constant (float_in, period_size, 1e-27);
 					break;
 				case 5:
+					NOTIFY("Sine-wave 440Hz, amp:.5");
 					buffer_sine (float_in, period_size, (period_size * l), sample_rate, 440, .5);
 					break;
 				case 6:
+					NOTIFY("Random impulses amp:0.5");
 					buffer_rand_impulse(float_in, period_size, 0.5);
 					break;
 
 					/* evil stuff :) */
 				case 7:
+					NOTIFY("Rect wave amp:-1.5..1.5");
 					buffer_rect(float_in, period_size, -1.5, 1.5);
 					break;
 				case 8:
+					NOTIFY("Constant 1e-38 -- denormal");
 					buffer_constant (float_in, period_size, 1e-38);
 					break;
 				case 9:
+					NOTIFY("Constant FLT_MIN (%e)", FLT_MIN);
 					buffer_constant (float_in, period_size, FLT_MIN);
 					break;
 
@@ -381,7 +392,7 @@ int main (int argc, char ** argv)  {
 		} /* for each period */
 	} /* for each mode */
 
-	printf("wrote %d frames to: %s\n", total, outfile);
+	printf("wrote %d frames to '%s'\n", total, outfile);
 
 error:
 	if (sf) sf_close(sf);
