@@ -129,6 +129,11 @@ int opus_vanilla_init(struct opuscodec *cd, const int sample_rate, const int kbp
 	opus_encoder_init(cd->encoder, sample_rate, 1, OPUS_APPLICATION_RESTRICTED_LOWDELAY);
 	opus_decoder_init(cd->decoder, sample_rate, 1);
 
+	int nfo;
+	err = opus_encoder_ctl(cd->encoder, OPUS_GET_LOOKAHEAD(&nfo));
+	OPWARN("OPUS_GET_LOOKAHEAD failed") else
+	printf("Encoder lookahead delay : %d\n", nfo);
+
 	return 0;
 }
 
@@ -168,6 +173,11 @@ int opus_custom_init(struct opuscodec *cd, const int sample_rate, const int kbps
 
 	opus_custom_encoder_init(cd->encoder_custom, cd->opus_mode, 1);
 	opus_custom_decoder_init(cd->decoder_custom, cd->opus_mode, 1);
+
+	int nfo;
+	err = opus_custom_encoder_ctl(cd->encoder_custom, OPUS_GET_LOOKAHEAD(&nfo));
+	OPWARN("OPUS_GET_LOOKAHEAD failed") else
+	printf("Encoder lookahead delay : %d\n", nfo);
 
 	return 0;
 }
