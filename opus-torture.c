@@ -337,7 +337,7 @@ int main (int argc, char ** argv)  {
 	}
 
 	int total = 0;
-	for (mode=0; mode < (evil?10:7); ++mode) {
+	for (mode=0; mode < (evil?11:7); ++mode) {
 		int l;
 		int notify=0;
 		for (l=0; l < loop; l++) {
@@ -380,6 +380,10 @@ int main (int argc, char ** argv)  {
 				case 9:
 					NOTIFY("Constant FLT_MIN (%e)", FLT_MIN);
 					buffer_constant (float_in, period_size, FLT_MIN);
+					break;
+				case 10:
+					NOTIFY("Sine-wave 440Hz, amp:1.5");
+					buffer_sine (float_in, period_size, (period_size * l), sample_rate, 440, 1.5);
 					break;
 
 				default: /* 0 -- silence */
