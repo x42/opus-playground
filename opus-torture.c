@@ -65,6 +65,17 @@ static void buffer_rect (float* const b, const int n, const float v0, const floa
   }
 }
 
+static int buffer_has_denormals (const float * const b, const int n) {
+	int i;
+	for (i = 0; i < n; ++i) {
+		if (fpclassify (b[i]) == FP_SUBNORMAL) {
+		return 1;
+		}
+	}
+	return 0;
+}
+
+
 struct opuscodec {
 #ifdef HAVE_OPUS_CUSTOM
 	OpusCustomMode *opus_mode;
@@ -377,6 +388,16 @@ int main (int argc, char ** argv)  {
 			}
 
 			op_process(&cd, float_in, float_out);
+
+			if (!(notify&4) && buffer_has_denormals(float_in, period_size)) {
+				printf(" !   input buffer has denormals.\n");
+				notify|=4;
+			}
+
+			if (!(notify&2) && buffer_has_denormals(float_out, period_size)) {
+				printf(" !   output buffer has denormals.\n");
+				notify|=2;
+			}
 
 			int s;
 			// interleave and write 1 sample at a time. Inefficient, but hey
