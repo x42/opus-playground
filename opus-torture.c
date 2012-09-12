@@ -205,6 +205,10 @@ opus-torture writes a stereo-file wav file with various audio patterns\n\
 channel 1 is the generated raw audio,\n\
 channel 2 has the same signal passed though an opus en/decode cycle\n\
 \n\
+WARNING: YOU ARE NOT SUPPOSED TO LISTEN TO THE GENERATED AUDIO FILE!\n\
+It may damage your equipment. Inspect it with a wave-editor or analyze it\n\
+with sndfile-tools,..\n\
+\n\
 if opus custom is used '-c', the period-size '-p' needs to be a power of\n\
 two >=64 and <=1024. Vanilla Opus accepts period-sizes which are multiples\n\
 of 120 samples.\n\
