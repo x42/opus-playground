@@ -20,27 +20,27 @@ else
   $(warning "building w/o opus-custom support")
 endif
 
-all: opus-torture
+all: opus-playground
 
-man: opus-torture.1
+man: opus-playground.1
 
-opus-torture: opus-torture.c
+opus-playground: opus-playground.c
 
 clean:
-	rm -f opus-torture
+	rm -f opus-playground
 
-opus-torture.1: opus-torture
-	help2man -N -n 'Opus Torture Test' -o opus-torture.1 ./opus-torture
+opus-playground.1: opus-playground
+	help2man -N -n 'Opus Torture Test' -o opus-playground.1 ./opus-playground
 
-install: opus-torture opus-torture.1
+install: opus-playground opus-playground.1
 	install -d $(DESTDIR)$(bindir)
 	install -d $(DESTDIR)$(mandir)/man1
-	install -m755 opus-torture $(DESTDIR)$(bindir)
-	install -m644 opus-torture.1 $(DESTDIR)$(mandir)/man1
+	install -m755 opus-playground $(DESTDIR)$(bindir)
+	install -m644 opus-playground.1 $(DESTDIR)$(mandir)/man1
 
 uninstall:
-	rm -f $(DESTDIR)$(bindir)/opus-torture
-	rm -f $(DESTDIR)$(mandir)/man1/opus-torture
+	rm -f $(DESTDIR)$(bindir)/opus-playground
+	rm -f $(DESTDIR)$(mandir)/man1/opus-playground
 	-rmdir $(DESTDIR)$(bindir)
 	-rmdir $(DESTDIR)$(mandir)
 
