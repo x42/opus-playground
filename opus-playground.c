@@ -36,7 +36,7 @@
 #include <opus/opus_custom.h>
 #endif
 
-#define ERREXIT(FMT,...) { fprintf(stderr, FMT, ##__VA_ARGS__); return EXIT_FAILURE; }
+#define ERREXIT(FMT,...) { fprintf(stderr, FMT"\n", ##__VA_ARGS__); return EXIT_FAILURE; }
 #define OPERR(FMT,...)  if (err != OPUS_OK) { fprintf(stderr, FMT ": %d\n", ##__VA_ARGS__, err); return 1; }
 #define OPWARN(FMT,...)  if (err != OPUS_OK) { fprintf(stderr, FMT ": %d\n", ##__VA_ARGS__, err); }
 #define NOTIFY(FMT,...)  if (!(notify&1)) { printf(" - "FMT"\n", ##__VA_ARGS__); notify|=1; }
